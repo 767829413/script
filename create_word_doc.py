@@ -1,15 +1,16 @@
+import argparse
 from word_doc_generator import create_table_word_document, save_document
 from db_handler import get_database_connection
 from db_operations.table_operations import get_tables_info, get_table_columns, get_table_indexes
 
-if __name__ == "__main__":
+
+def main(schema):
     # 获取数据库连接
     connection = get_database_connection()
     if connection.connect():
         try:
-            result = {"tables": [], "tableInfos": []}
             # 返回获取的数据
-            schema = 'infi_dev_s1'  # 请自行修改为您的数据库 schema
+            result = {"tables": [], "tableInfos": []}
             tables = get_tables_info(connection, schema)
 
             for table in tables:
@@ -74,3 +75,15 @@ if __name__ == "__main__":
             connection.disconnect()  # 关闭数据库连接
     else:
         print("无法连接到数据库")
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description='Generate Word document for database schema')
+    parser.add_argument('--schema',
+                        type=str,
+                        required=True,
+                        help='Database schema name')
+    args = parser.parse_args()
+
+    main(args.schema)
